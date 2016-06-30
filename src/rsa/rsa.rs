@@ -72,7 +72,8 @@ pub struct RSAParameters {
 impl signature::VerificationAlgorithm for RSAParameters {
     fn verify(&self, public_key: untrusted::Input, msg: untrusted::Input,
               signature: untrusted::Input) -> Result<(), error::Unspecified> {
-        verify(self, public_key, msg, signature)
+        let (n, e) = try!(parse_public_key(public_key));
+        verify(self, (n, e), msg, signature)
     }
 }
 
@@ -161,29 +162,30 @@ pkcs1_digestinfo_prefix!(
 
 
 fn parse_public_key<'a>(input: untrusted::Input<'a>) ->
-                        Result<(&'a [u8], &'a [u8]), error::Unspecified> {
+                        Result<(untrusted::Input, untrusted::Input),
+                               error::Unspecified> {
     input.read_all(error::Unspecified, |input| {
         der::nested(input, der::Tag::Sequence, error::Unspecified, |input| {
             let n = try!(der::positive_integer(input));
             let e = try!(der::positive_integer(input));
-            Ok((n.as_slice_less_safe(), e.as_slice_less_safe()))
+            Ok((n, e))
         })
     })
 }
 
-fn verify(params: &RSAParameters, public_key: untrusted::Input,
+fn verify(params: &RSAParameters, (n, e): (untrusted::Input, untrusted::Input),
           msg: untrusted::Input, signature: untrusted::Input)
           -> Result<(), error::Unspecified> {
     const MAX_BITS: usize = 8192;
 
-    let (n, e) = try!(parse_public_key(public_key));
     let signature = signature.as_slice_less_safe();
     let mut decoded = [0u8; (MAX_BITS + 7) / 8];
     if signature.len() > decoded.len() {
         return Err(error::Unspecified);
     }
     let decoded = &mut decoded[..signature.len()];
-
+    let n = n.as_slice_less_safe();
+    let e = e.as_slice_less_safe();
     try!(bssl::map_result(unsafe {
         GFp_rsa_public_decrypt(decoded.as_mut_ptr(), decoded.len(),
                                n.as_ptr(), n.len(), e.as_ptr(), e.len(),
