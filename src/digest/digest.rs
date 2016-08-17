@@ -27,7 +27,7 @@
 #![allow(unsafe_code)]
 
 use {c, init, polyfill};
-use core::{self, fmt};
+use core;
 
 // XXX: Replace with `const fn` when `const fn` is stable:
 // https://github.com/rust-lang/rust/issues/24111
@@ -262,8 +262,8 @@ impl AsRef<[u8]> for Digest {
     }
 }
 
-impl fmt::Debug for Digest {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Debug for Digest {
+    fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
         try!(write!(fmt, "{:?}:", self.algorithm));
         for byte in self.as_ref() {
             try!(write!(fmt, "{:02x}", byte));
@@ -306,8 +306,8 @@ pub struct Algorithm {
     pub nid: c::int,
 }
 
-impl fmt::Debug for Algorithm {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Debug for Algorithm {
+    fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self.nid {
             64 => fmt.write_str("SHA-1"),
             672 => fmt.write_str("SHA-256"),
