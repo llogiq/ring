@@ -771,18 +771,22 @@ mod tests {
     #[test]
     fn test_fmt_digest() {
         assert_eq!("SHA-1:b7e23ec29af22b0b4e41da31e868d57226121c84",
-                   &format!("{:?}", digest::digest(&digest::SHA1, b"hello, world")));
+                   &format!("{:?}",
+                            digest::digest(&digest::SHA1, b"hello, world")));
         assert_eq!("SHA-256:09ca7e4eaa6e8ae9c7d261167129184883644d\
                     07dfba7cbfbc4c8a2e08360d5b",
-                   &format!("{:?}", digest::digest(&digest::SHA256, b"hello, world")));
+                   &format!("{:?}",
+                            digest::digest(&digest::SHA256, b"hello, world")));
         assert_eq!("SHA-384:1fcdb6059ce05172a26bbe2a3ccc88ed5a8cd5\
                     fc53edfd9053304d429296a6da23b1cd9e5c9ed3bb34f0\
                     0418a70cdb7e",
-                   &format!("{:?}", digest::digest(&digest::SHA384, b"hello, world")));
+                   &format!("{:?}",
+                            digest::digest(&digest::SHA384, b"hello, world")));
         assert_eq!("SHA-512:8710339dcb6814d0d9d2290ef422285c9322b7\
                     163951f9a0ca8f883d3305286f44139aa374848e4174f5\
                     aada663027e4548637b6d19894aec4fb6c46a139fbf9",
-                   &format!("{:?}", digest::digest(&digest::SHA512, b"hello, world")));
+                   &format!("{:?}",
+                            digest::digest(&digest::SHA512, b"hello, world")));
 
     }
 }
